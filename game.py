@@ -3,6 +3,7 @@ import random
 
 import pygame
 
+# Set immutable values
 TITLE = 'Blockade'
 WIN_W, WIN_H = 720, 600
 WIN_SIZE = WIN_W, WIN_H
@@ -15,16 +16,36 @@ MAP = tuple(
 
 
 class Game:
+    """Blockade.
+
+    Yet another Snake game.
+
+    `Blockade` refers to the very first electronic game to introduce
+    the basic mechanics used in almost all snake-like games.
+
+    With that said, despite of the name this
+    is not a port of the Blockade game.
+    """
+
     def __init__(self):
+        """Performs game initialization.
+
+        - Initialize game engine
+        - Configure window
+        - Set initial controlling variables
+        - Create drawable objects
+        """
         pygame.init()
         pygame.display.set_caption(TITLE)
         self.screen = pygame.display.set_mode(WIN_SIZE)
+
         self.clock = pygame.time.Clock()
         self.running = False
         self.xv, self.yv, self.ac = 1, 0, BLOCK_W
         center = WIN_W // 2, WIN_H // 2
         self.snake = [center, (center[0] - BLOCK_W, center[1])]
         self.apple = 60, 60
+
         self.red_block = pygame.Surface(BLOCK_SIZE)
         self.red_block.fill((255, 0, 0))
         self.red_block = self.red_block.convert()
@@ -33,6 +54,11 @@ class Game:
         self.green_block = self.green_block.convert()
 
     def events(self):
+        """Handles player input events.
+
+        Check if the player has hit a key, if it did it,
+        check if the key is mapped to an action.
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
@@ -49,6 +75,13 @@ class Game:
                     self.xv, self.yv = 0, 1
 
     def update(self):
+        """Updates elements position and status.
+
+        Here is where the game mechanics is built.
+        - Update snake position
+        - Check if the snake has eaten the apple
+        - Put a new apple in a random position if it was ate
+        """
         head = (
             (self.snake[0][0] + self.xv * self.ac),
             (self.snake[0][1] + self.yv * self.ac),
@@ -64,12 +97,18 @@ class Game:
             self.snake.pop()
 
     def draw(self):
+        """Draws everything on screen."""
         self.screen.fill((0, 0, 0))
         self.screen.blit(self.red_block, self.apple)
         [self.screen.blit(self.green_block, xy) for xy in self.snake]
         pygame.display.flip()
 
     def loop(self):
+        """Game main loop.
+
+        Keeps repeating the same sequence of steps
+        until the player dies or quit the game.
+        """
         while self.running:
             self.clock.tick(FPS)
             self.events()
@@ -77,6 +116,7 @@ class Game:
             self.draw()
 
     def run(self):
+        """Starts the game."""
         self.running = True
         self.loop()
         pygame.quit()
