@@ -14,62 +14,74 @@ MAP = tuple(
 )
 
 
-def main():
-    pygame.init()
-    pygame.display.set_caption(TITLE)
-    screen = pygame.display.set_mode(WIN_SIZE)
-    clock = pygame.time.Clock()
+class Game:
+    def __init__(self):
+        pygame.init()
+        pygame.display.set_caption(TITLE)
+        self.screen = pygame.display.set_mode(WIN_SIZE)
+        self.clock = pygame.time.Clock()
+        self.running = False
+        self.xv, self.yv, self.ac = 1, 0, BLOCK_W
+        center = WIN_W // 2, WIN_H // 2
+        self.snake = [center, (center[0] - BLOCK_W, center[1])]
+        self.apple = 60, 60
+        self.red_block = pygame.Surface(BLOCK_SIZE)
+        self.red_block.fill((255, 0, 0))
+        self.red_block = self.red_block.convert()
+        self.green_block = pygame.Surface(BLOCK_SIZE)
+        self.green_block.fill((0, 255, 0))
+        self.green_block = self.green_block.convert()
 
-    red_block = pygame.Surface(BLOCK_SIZE)
-    red_block.fill((255, 0, 0))
-    red_block = red_block.convert()
-
-    green_block = pygame.Surface(BLOCK_SIZE)
-    green_block.fill((0, 255, 0))
-    green_block = green_block.convert()
-
-    xv, yv, ac = 1, 0, BLOCK_W
-    center = WIN_W // 2, WIN_H // 2
-    apple = 60, 60
-    snake = [center, (center[0] - BLOCK_W, center[1])]
-    running = True
-
-    while running:
-        clock.tick(FPS)
-
+    def events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                self.running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    running = False
+                    self.running = False
                 elif event.key == pygame.K_LEFT:
-                    xv, yv = -1, 0
+                    self.xv, self.yv = -1, 0
                 elif event.key == pygame.K_RIGHT:
-                    xv, yv = 1, 0
+                    self.xv, self.yv = 1, 0
                 elif event.key == pygame.K_UP:
-                    xv, yv = 0, -1
+                    self.xv, self.yv = 0, -1
                 elif event.key == pygame.K_DOWN:
-                    xv, yv = 0, 1
+                    self.xv, self.yv = 0, 1
 
-        head = (snake[0][0] + xv * ac), (snake[0][1] + yv * ac)
-        snake.insert(0, head)
+    def update(self):
+        head = (
+            (self.snake[0][0] + self.xv * self.ac),
+            (self.snake[0][1] + self.yv * self.ac),
+        )
+        self.snake.insert(0, head)
 
-        if head == apple:
-            apple = None
-            while not apple:
+        if head == self.apple:
+            self.apple = None
+            while not self.apple:
                 xy = random.choice(MAP)
-                apple = xy if xy not in snake else None
+                self.apple = xy if xy not in self.snake else None
         else:
-            snake.pop()
+            self.snake.pop()
 
-        screen.fill((0, 0, 0))
-        screen.blit(red_block, apple)
-        [screen.blit(green_block, xy) for xy in snake]
+    def draw(self):
+        self.screen.fill((0, 0, 0))
+        self.screen.blit(self.red_block, self.apple)
+        [self.screen.blit(self.green_block, xy) for xy in self.snake]
         pygame.display.flip()
 
-    pygame.quit()
+    def loop(self):
+        while self.running:
+            self.clock.tick(FPS)
+            self.events()
+            self.update()
+            self.draw()
+
+    def run(self):
+        self.running = True
+        self.loop()
+        pygame.quit()
 
 
 if __name__ == '__main__':
-    main()
+    game = Game()
+    game.run()
