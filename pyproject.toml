@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "pythons"
+name = "blockade-game"
 version = "0.1.0"
-description = "Snakes game written in Python"
+description = "Yet another snake game written in Python"
 authors = ["Juliano Fernandes <julianofernandes@gmail.com>"]
 license = "MIT"
 

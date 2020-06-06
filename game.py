@@ -3,7 +3,7 @@ import random
 
 import pygame
 
-TITLE = 'Pythons'
+TITLE = 'Blockade'
 WIN_W, WIN_H = 720, 600
 WIN_SIZE = WIN_W, WIN_H
 BLOCK_W, BLOCK_H = 30, 30
