@@ -9,9 +9,6 @@ WIN_SIZE = WIN_W, WIN_H
 BLOCK_W, BLOCK_H = 30, 30
 BLOCK_SIZE = BLOCK_W, BLOCK_H
 FPS = 5
-BLACK = 0, 0, 0
-RED = 255, 0, 0
-GREEN = 0, 255, 0
 MAP = tuple(
     itertools.product(range(0, WIN_W, BLOCK_W), range(0, WIN_H, BLOCK_H))
 )
@@ -24,11 +21,11 @@ def main():
     clock = pygame.time.Clock()
 
     red_block = pygame.Surface(BLOCK_SIZE)
-    red_block.fill(RED)
+    red_block.fill((255, 0, 0))
     red_block = red_block.convert()
 
     green_block = pygame.Surface(BLOCK_SIZE)
-    green_block.fill(GREEN)
+    green_block.fill((0, 255, 0))
     green_block = green_block.convert()
 
     xv, yv, ac = 1, 0, BLOCK_W
@@ -66,7 +63,7 @@ def main():
         else:
             snake.pop()
 
-        screen.fill(BLACK)
+        screen.fill((0, 0, 0))
         screen.blit(red_block, apple)
         [screen.blit(green_block, xy) for xy in snake]
         pygame.display.flip()
