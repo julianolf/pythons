@@ -66,13 +66,17 @@ class Game:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
                 elif event.key == pygame.K_LEFT:
-                    self.xv, self.yv = -1, 0
+                    if (self.xv, self.yv) != (1, 0):
+                        self.xv, self.yv = -1, 0
                 elif event.key == pygame.K_RIGHT:
-                    self.xv, self.yv = 1, 0
+                    if (self.xv, self.yv) != (-1, 0):
+                        self.xv, self.yv = 1, 0
                 elif event.key == pygame.K_UP:
-                    self.xv, self.yv = 0, -1
+                    if (self.xv, self.yv) != (0, 1):
+                        self.xv, self.yv = 0, -1
                 elif event.key == pygame.K_DOWN:
-                    self.xv, self.yv = 0, 1
+                    if (self.xv, self.yv) != (0, -1):
+                        self.xv, self.yv = 0, 1
 
     def update(self):
         """Updates elements position and status.
