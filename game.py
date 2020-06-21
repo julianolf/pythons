@@ -85,6 +85,7 @@ class Game:
         - Update snake position
         - Check if the snake has eaten the apple
         - Put a new apple in a random position if it was ate
+        - If the head of the snake leaves the screen the game is over
         """
         head = (
             (self.snake[0][0] + self.xv * self.ac),
@@ -99,6 +100,9 @@ class Game:
                 self.apple = xy if xy not in self.snake else None
         else:
             self.snake.pop()
+
+        if head[0] < 0 or head[0] >= WIN_W or head[1] < 0 or head[1] >= WIN_H:
+            self.running = False
 
     def draw(self):
         """Draws everything on screen."""
