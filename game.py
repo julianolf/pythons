@@ -5,14 +5,16 @@ import pygame
 
 # Set immutable values
 TITLE = 'Blockade'
-WIN_W, WIN_H = 720, 600
-WIN_SIZE = WIN_W, WIN_H
 BLOCK_W, BLOCK_H = 30, 30
 BLOCK_SIZE = BLOCK_W, BLOCK_H
+WIN_W, WIN_H = BLOCK_W * 24, BLOCK_H * 20 + BLOCK_H
+WIN_SIZE = WIN_W, WIN_H
 FPS = 5
 MAP = tuple(
-    itertools.product(range(0, WIN_W, BLOCK_W), range(0, WIN_H, BLOCK_H))
+    itertools.product(range(0, WIN_W, BLOCK_W), range(BLOCK_H, WIN_H, BLOCK_H))
 )
+FONT_NAME = "Courier"
+FONT_SIZE = 45
 
 
 class Game:
@@ -38,14 +40,20 @@ class Game:
         pygame.init()
         pygame.display.set_caption(TITLE)
         self.screen = pygame.display.set_mode(WIN_SIZE)
+        self.font = pygame.font.SysFont(FONT_NAME, FONT_SIZE)
 
         self.clock = pygame.time.Clock()
         self.running = False
         self.xv, self.yv, self.ac = 1, 0, BLOCK_W
-        center = WIN_W // 2, WIN_H // 2
+        center = WIN_W // 2, (WIN_H - BLOCK_H) // 2
         self.snake = [center, (center[0] - BLOCK_W, center[1])]
         self.apple = 60, 60
+        self.score = 0
+        self.score_pos = WIN_W / 2, 2
 
+        self.white_bar = pygame.Surface((WIN_W, BLOCK_H))
+        self.white_bar.fill((255, 255, 255))
+        self.white_bar = self.white_bar.convert()
         self.red_block = pygame.Surface(BLOCK_SIZE)
         self.red_block.fill((255, 0, 0))
         self.red_block = self.red_block.convert()
@@ -95,6 +103,7 @@ class Game:
         self.snake.insert(0, head)
 
         if head == self.apple:
+            self.score += 10
             self.apple = None
             while not self.apple:
                 xy = random.choice(MAP)
@@ -102,7 +111,12 @@ class Game:
         else:
             self.snake.pop()
 
-        if head[0] < 0 or head[0] >= WIN_W or head[1] < 0 or head[1] >= WIN_H:
+        if (
+            head[0] < 0
+            or head[0] >= WIN_W
+            or head[1] < BLOCK_H
+            or head[1] >= WIN_H
+        ):
             self.running = False
 
         if head in self.snake[1:]:
@@ -113,6 +127,11 @@ class Game:
         self.screen.fill((0, 0, 0))
         self.screen.blit(self.red_block, self.apple)
         [self.screen.blit(self.green_block, xy) for xy in self.snake]
+        self.screen.blit(self.white_bar, (0, 0))
+        score = self.font.render(str(self.score), True, (0, 0, 0))
+        score_rect = score.get_rect()
+        score_rect.midtop = self.score_pos
+        self.screen.blit(score, score_rect)
         pygame.display.flip()
 
     def loop(self):
