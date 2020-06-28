@@ -9,7 +9,6 @@ BLOCK_W, BLOCK_H = 30, 30
 BLOCK_SIZE = BLOCK_W, BLOCK_H
 WIN_W, WIN_H = BLOCK_W * 24, BLOCK_H * 20 + BLOCK_H
 WIN_SIZE = WIN_W, WIN_H
-FPS = 5
 MAP = tuple(
     itertools.product(range(0, WIN_W, BLOCK_W), range(BLOCK_H, WIN_H, BLOCK_H))
 )
@@ -43,6 +42,7 @@ class Game:
         self.font = pygame.font.SysFont(FONT_NAME, FONT_SIZE)
 
         self.clock = pygame.time.Clock()
+        self.fps = 5
         self.running = False
         self.xv, self.yv, self.ac = 1, 0, BLOCK_W
         center = WIN_W // 2, (WIN_H - BLOCK_H) // 2
@@ -122,6 +122,9 @@ class Game:
         if head in self.snake[1:]:
             self.running = False
 
+        if self.fps % 100 == 0:
+            self.fps += 5
+
     def draw(self):
         """Draws everything on screen."""
         self.screen.fill((0, 0, 0))
@@ -141,7 +144,7 @@ class Game:
         until the player dies or quit the game.
         """
         while self.running:
-            self.clock.tick(FPS)
+            self.clock.tick(self.fps)
             self.events()
             self.update()
             self.draw()
