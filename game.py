@@ -9,12 +9,25 @@ BLOCK_W, BLOCK_H = 30, 30
 BLOCK_SIZE = BLOCK_W, BLOCK_H
 WIN_W, WIN_H = BLOCK_W * 24, BLOCK_H * 20 + BLOCK_H
 WIN_SIZE = WIN_W, WIN_H
+CENTER_W, CENTER_H = WIN_W // 2, WIN_H // 2
+WIN_CENTER = CENTER_W, CENTER_H
 MAP = tuple(
     itertools.product(range(0, WIN_W, BLOCK_W), range(BLOCK_H, WIN_H, BLOCK_H))
 )
 FONT_NAME = "Courier"
 FONT_SIZE = 45
 FONT_SIZE_SMALL = 20
+
+
+class Color:
+    """Color palette."""
+
+    RED = (255, 0, 0)
+    GREEN = (0, 255, 0)
+    BLUE = (0, 0, 255)
+    YELLOW = (255, 255, 0)
+    BLACK = (0, 0, 0)
+    WHITE = (255, 255, 255)
 
 
 class Game:
@@ -41,21 +54,20 @@ class Game:
         self.fps = 5
         self.running = False
         self.xv, self.yv, self.ac = 1, 0, BLOCK_W
-        center = WIN_W // 2, (WIN_H - BLOCK_H) // 2
+        center = CENTER_W, (WIN_H - BLOCK_H) // 2
         self.snake = [center, (center[0] - BLOCK_W, center[1])]
         self.apple = 60, 60
         self.score = 0
-        self.score_pos = WIN_W / 2, 2
+        self.score_pos = CENTER_W, BLOCK_H // 2
 
         self.white_bar = pygame.Surface((WIN_W, BLOCK_H))
         self.white_bar.fill((255, 255, 255))
         self.white_bar = self.white_bar.convert()
-        self.red_block = pygame.Surface(BLOCK_SIZE)
-        self.red_block.fill((255, 0, 0))
-        self.red_block = self.red_block.convert()
-        self.green_block = pygame.Surface(BLOCK_SIZE)
-        self.green_block.fill((0, 255, 0))
-        self.green_block = self.green_block.convert()
+        self.block = pygame.Surface(BLOCK_SIZE)
+        self.block.fill(Color.RED)
+        self.red_block = self.block.convert()
+        self.block.fill(Color.GREEN)
+        self.green_block = self.block.convert()
 
     def events(self):
         """Handles player input events.
@@ -66,21 +78,27 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+                return
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
+                    return
                 elif event.key == pygame.K_LEFT:
                     if (self.xv, self.yv) != (1, 0):
                         self.xv, self.yv = -1, 0
+                        return
                 elif event.key == pygame.K_RIGHT:
                     if (self.xv, self.yv) != (-1, 0):
                         self.xv, self.yv = 1, 0
+                        return
                 elif event.key == pygame.K_UP:
                     if (self.xv, self.yv) != (0, 1):
                         self.xv, self.yv = 0, -1
+                        return
                 elif event.key == pygame.K_DOWN:
                     if (self.xv, self.yv) != (0, -1):
                         self.xv, self.yv = 0, 1
+                        return
 
     def update(self):
         """Updates elements position and status.
@@ -123,17 +141,14 @@ class Game:
 
     def draw(self):
         """Draws everything on screen."""
-        self.screen.fill((0, 0, 0))
+        self.screen.fill(Color.BLACK)
         self.screen.blit(self.red_block, self.apple)
         [self.screen.blit(self.green_block, xy) for xy in self.snake]
         self.screen.blit(self.white_bar, (0, 0))
-        score = self.font.render(str(self.score), True, (0, 0, 0))
-        score_rect = score.get_rect()
-        score_rect.midtop = self.score_pos
-        self.screen.blit(score, score_rect)
+        self.draw_text(self.font, str(self.score), self.score_pos, Color.BLACK)
         pygame.display.flip()
 
-    def draw_text(self, font, text, position, color, center=False):
+    def draw_text(self, font, text, position, color, center=True):
         """Draws text on screen."""
         obj = font.render(text, True, color)
         obj_rect = obj.get_rect()
@@ -158,13 +173,12 @@ class Game:
 
     def splash(self):
         """Show splash screen."""
-        self.screen.fill((0, 0, 0))
+        self.screen.fill(Color.BLACK)
 
-        block = pygame.Surface(BLOCK_SIZE)
-        block.fill((0, 0, 255))
-        blue_block = block.convert()
-        block.fill((255, 255, 0))
-        yellow_block = block.convert()
+        self.block.fill(Color.BLUE)
+        blue_block = self.block.convert()
+        self.block.fill(Color.YELLOW)
+        yellow_block = self.block.convert()
         w10, w11, w12, w13 = [BLOCK_W * w for w in range(10, 14)]
         h2, h3, h4, h5, h6, h7 = [BLOCK_H * h for h in range(2, 8)]
         h1_2 = BLOCK_H // 1.2
@@ -189,23 +203,15 @@ class Game:
         [self.screen.blit(blue_block, xy) for xy in blues]
         [self.screen.blit(yellow_block, xy) for xy in yellows]
 
-        title_pos = (WIN_W // 2, WIN_H // 2)
-        title_color = (255, 255, 255)
-        self.draw_text(self.font, TITLE, title_pos, title_color, center=True)
+        self.draw_text(self.font, TITLE, WIN_CENTER, Color.WHITE, center=True)
 
-        ctrl_str = "Use the [arrow] keys to move"
-        ctrl_pos = title_pos[0], title_pos[1] + BLOCK_H
-        ctrl_color = (255, 255, 255)
-        self.draw_text(
-            self.font_small, ctrl_str, ctrl_pos, ctrl_color, center=True
-        )
+        ctrl = "Use the [arrow] keys to move"
+        ctrl_pos = CENTER_W, CENTER_H + BLOCK_H
+        self.draw_text(self.font_small, ctrl, ctrl_pos, Color.WHITE)
 
-        start_str = "Press any key to start"
-        start_pos = title_pos[0], WIN_H - BLOCK_H
-        ctrl_color = (255, 255, 255)
-        self.draw_text(
-            self.font_small, start_str, start_pos, ctrl_color, center=True
-        )
+        start = "Press any key to start"
+        start_pos = CENTER_W, WIN_H - BLOCK_H
+        self.draw_text(self.font_small, start, start_pos, Color.WHITE)
 
         pygame.display.flip()
 
@@ -227,5 +233,4 @@ class Game:
 
 
 if __name__ == "__main__":
-    game = Game()
-    game.run()
+    Game().run()
