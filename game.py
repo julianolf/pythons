@@ -4,7 +4,7 @@ import random
 import pygame
 
 # Set immutable values
-TITLE = 'Blockade'
+TITLE = "PYTHONS"
 BLOCK_W, BLOCK_H = 30, 30
 BLOCK_SIZE = BLOCK_W, BLOCK_H
 WIN_W, WIN_H = BLOCK_W * 24, BLOCK_H * 20 + BLOCK_H
@@ -14,18 +14,13 @@ MAP = tuple(
 )
 FONT_NAME = "Courier"
 FONT_SIZE = 45
+FONT_SIZE_SMALL = 20
 
 
 class Game:
-    """Blockade.
+    """Pythons.
 
     Yet another Snake game.
-
-    `Blockade` refers to the very first electronic game to introduce
-    the basic mechanics used in almost all snake-like games.
-
-    With that said, despite of the name this
-    is not a port of the Blockade game.
     """
 
     def __init__(self):
@@ -40,6 +35,7 @@ class Game:
         pygame.display.set_caption(TITLE)
         self.screen = pygame.display.set_mode(WIN_SIZE)
         self.font = pygame.font.SysFont(FONT_NAME, FONT_SIZE)
+        self.font_small = pygame.font.SysFont(FONT_NAME, FONT_SIZE_SMALL)
 
         self.clock = pygame.time.Clock()
         self.fps = 5
@@ -137,6 +133,17 @@ class Game:
         self.screen.blit(score, score_rect)
         pygame.display.flip()
 
+    def draw_text(self, font, text, position, color, center=False):
+        """Draws text on screen."""
+        obj = font.render(text, True, color)
+        obj_rect = obj.get_rect()
+        x, y = position
+        if center:
+            x -= obj_rect.width // 2
+            y -= obj_rect.height // 2
+        obj_rect.topleft = x, y
+        self.screen.blit(obj, obj_rect)
+
     def loop(self):
         """Game main loop.
 
@@ -149,13 +156,76 @@ class Game:
             self.update()
             self.draw()
 
+    def splash(self):
+        """Show splash screen."""
+        self.screen.fill((0, 0, 0))
+
+        block = pygame.Surface(BLOCK_SIZE)
+        block.fill((0, 0, 255))
+        blue_block = block.convert()
+        block.fill((255, 255, 0))
+        yellow_block = block.convert()
+        w10, w11, w12, w13 = [BLOCK_W * w for w in range(10, 14)]
+        h2, h3, h4, h5, h6, h7 = [BLOCK_H * h for h in range(2, 8)]
+        h1_2 = BLOCK_H // 1.2
+        blues = [
+            (w11, h2 + h1_2),
+            (w12, h2 + h1_2),
+            (w12, h3),
+            (w10, h4),
+            (w11, h4),
+            (w12, h4),
+            (w10, h5),
+        ]
+        yellows = [
+            (w13, h4),
+            (w11, h5),
+            (w12, h5),
+            (w13, h5),
+            (w11, h6),
+            (w11, h7 - h1_2),
+            (w12, h7 - h1_2),
+        ]
+        [self.screen.blit(blue_block, xy) for xy in blues]
+        [self.screen.blit(yellow_block, xy) for xy in yellows]
+
+        title_pos = (WIN_W // 2, WIN_H // 2)
+        title_color = (255, 255, 255)
+        self.draw_text(self.font, TITLE, title_pos, title_color, center=True)
+
+        ctrl_str = "Use the [arrow] keys to move"
+        ctrl_pos = title_pos[0], title_pos[1] + BLOCK_H
+        ctrl_color = (255, 255, 255)
+        self.draw_text(
+            self.font_small, ctrl_str, ctrl_pos, ctrl_color, center=True
+        )
+
+        start_str = "Press any key to start"
+        start_pos = title_pos[0], WIN_H - BLOCK_H
+        ctrl_color = (255, 255, 255)
+        self.draw_text(
+            self.font_small, start_str, start_pos, ctrl_color, center=True
+        )
+
+        pygame.display.flip()
+
+        while self.running:
+            self.clock.tick(self.fps)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                    return
+                if event.type == pygame.KEYDOWN:
+                    return
+
     def run(self):
         """Starts the game."""
         self.running = True
+        self.splash()
         self.loop()
         pygame.quit()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     game = Game()
     game.run()
