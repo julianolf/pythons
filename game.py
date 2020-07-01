@@ -1,4 +1,5 @@
 import itertools
+import os
 import random
 
 import pygame
@@ -14,9 +15,10 @@ WIN_CENTER = CENTER_W, CENTER_H
 MAP = tuple(
     itertools.product(range(0, WIN_W, BLOCK_W), range(BLOCK_H, WIN_H, BLOCK_H))
 )
-FONT_NAME = "Courier"
-FONT_SIZE = 45
-FONT_SIZE_SMALL = 20
+ASSETS_PATH = os.path.join(os.path.dirname(__file__), "assets")
+FONT_PATH = os.path.join(ASSETS_PATH, "font")
+FONT = os.path.join(FONT_PATH, "museo_moderno.ttf")
+FONT_M = os.path.join(FONT_PATH, "museo_moderno_medium.ttf")
 
 
 class Color:
@@ -47,8 +49,6 @@ class Game:
         pygame.init()
         pygame.display.set_caption(TITLE)
         self.screen = pygame.display.set_mode(WIN_SIZE)
-        self.font = pygame.font.SysFont(FONT_NAME, FONT_SIZE)
-        self.font_small = pygame.font.SysFont(FONT_NAME, FONT_SIZE_SMALL)
 
         self.clock = pygame.time.Clock()
         self.fps = 5
@@ -145,19 +145,28 @@ class Game:
         self.screen.blit(self.red_block, self.apple)
         [self.screen.blit(self.green_block, xy) for xy in self.snake]
         self.screen.blit(self.white_bar, (0, 0))
-        self.draw_text(self.font, str(self.score), self.score_pos, Color.BLACK)
+        self.draw_text(str(self.score), self.score_pos, size=32)
         pygame.display.flip()
 
-    def draw_text(self, font, text, position, color, center=True):
+    def draw_text(
+        self,
+        text,
+        position,
+        font=FONT,
+        size=16,
+        color=Color.BLACK,
+        centered=True,
+    ):
         """Draws text on screen."""
-        obj = font.render(text, True, color)
-        obj_rect = obj.get_rect()
+        _font = pygame.font.Font(font, size)
+        _text = _font.render(text, True, color)
+        _rect = _text.get_rect()
         x, y = position
-        if center:
-            x -= obj_rect.width // 2
-            y -= obj_rect.height // 2
-        obj_rect.topleft = x, y
-        self.screen.blit(obj, obj_rect)
+        if centered:
+            x -= _rect.width // 2
+            y -= _rect.height // 2
+        _rect.topleft = x, y
+        self.screen.blit(_text, _rect)
 
     def loop(self):
         """Game main loop.
@@ -203,15 +212,17 @@ class Game:
         [self.screen.blit(blue_block, xy) for xy in blues]
         [self.screen.blit(yellow_block, xy) for xy in yellows]
 
-        self.draw_text(self.font, TITLE, WIN_CENTER, Color.WHITE, center=True)
+        self.draw_text(
+            TITLE, WIN_CENTER, font=FONT_M, size=48, color=Color.WHITE
+        )
 
         ctrl = "Use the [arrow] keys to move"
-        ctrl_pos = CENTER_W, CENTER_H + BLOCK_H
-        self.draw_text(self.font_small, ctrl, ctrl_pos, Color.WHITE)
+        ctrl_pos = CENTER_W, CENTER_H + (BLOCK_H * 1.3)
+        self.draw_text(ctrl, ctrl_pos, color=Color.WHITE)
 
         start = "Press any key to start"
         start_pos = CENTER_W, WIN_H - BLOCK_H
-        self.draw_text(self.font_small, start, start_pos, Color.WHITE)
+        self.draw_text(start, start_pos, color=Color.WHITE)
 
         pygame.display.flip()
 
