@@ -51,13 +51,6 @@ class Game:
         self.screen = pygame.display.set_mode(WIN_SIZE)
 
         self.clock = pygame.time.Clock()
-        self.fps = 5
-        self.running = False
-        self.xv, self.yv, self.ac = 1, 0, BLOCK_W
-        center = CENTER_W, (WIN_H - BLOCK_H) // 2
-        self.snake = [center, (center[0] - BLOCK_W, center[1])]
-        self.apple = 60, 60
-        self.score = 0
         self.score_pos = CENTER_W, BLOCK_H // 2
 
         self.white_bar = pygame.Surface((WIN_W, BLOCK_H))
@@ -68,6 +61,17 @@ class Game:
         self.red_block = self.block.convert()
         self.block.fill(Color.GREEN)
         self.green_block = self.block.convert()
+
+    def reset(self):
+        """(Re)Set controlling variables."""
+        self.fps = 5
+        self.running = True
+        self.alive = True
+        self.xv, self.yv, self.ac = 1, 0, BLOCK_W
+        center = CENTER_W, (WIN_H - BLOCK_H) // 2
+        self.snake = [center, (center[0] - BLOCK_W, center[1])]
+        self.apple = 60, 60
+        self.score = 0
 
     def events(self):
         """Handles player input events.
@@ -131,10 +135,10 @@ class Game:
             or head[1] < BLOCK_H
             or head[1] >= WIN_H
         ):
-            self.running = False
+            self.alive = False
 
         if head in self.snake[1:]:
-            self.running = False
+            self.alive = False
 
         if self.fps % 100 == 0:
             self.fps += 5
@@ -179,6 +183,7 @@ class Game:
             self.events()
             self.update()
             self.draw()
+            self.game_over()
 
     def splash(self):
         """Show splash screen."""
@@ -225,8 +230,28 @@ class Game:
         self.draw_text(start, start_pos, color=Color.WHITE)
 
         pygame.display.flip()
+        self.wait_keydown()
 
-        while self.running:
+    def game_over(self):
+        """Show game over screen."""
+        if self.alive:
+            return
+
+        self.screen.fill(Color.BLACK)
+        self.draw_text(
+            "GAME OVER", WIN_CENTER, font=FONT_M, size=48, color=Color.WHITE
+        )
+        again = "Press any key to play again"
+        again_pos = CENTER_W, WIN_H - BLOCK_H
+        self.draw_text(again, again_pos, color=Color.WHITE)
+
+        pygame.display.flip()
+        self.wait_keydown()
+        self.reset()
+
+    def wait_keydown(self):
+        """Wait until a key is pressed or the windown is closed."""
+        while True:
             self.clock.tick(self.fps)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -237,7 +262,7 @@ class Game:
 
     def run(self):
         """Starts the game."""
-        self.running = True
+        self.reset()
         self.splash()
         self.loop()
         pygame.quit()
