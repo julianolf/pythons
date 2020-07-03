@@ -247,7 +247,9 @@ class Game:
 
         pygame.display.flip()
         self.wait_keydown()
-        self.reset()
+
+        if self.running:
+            self.reset()
 
     def wait_keydown(self):
         """Wait until a key is pressed or the windown is closed."""
