@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pythons"
-version = "0.1.0"
+version = "0.1.1"
 description = "Yet another snake game written in Python"
 authors = ["Juliano Fernandes <julianofernandes@gmail.com>"]
 license = "MIT"
@@ -14,7 +14,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.7"
-pygame = {version = "*", allow-prereleases = true}
+pygame = "2.0.0.dev10"
 
 [tool.poetry.dev-dependencies]
 black = {version = "*", allow-prereleases = true}
