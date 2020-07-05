@@ -27,3 +27,10 @@ Installing
 Use ``pip`` to download and install the game. ::
 
     $ pip install pythons
+
+Running
+-------
+
+Just type ``pythons`` to run the game. ::
+
+    $ pythons
