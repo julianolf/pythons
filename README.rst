@@ -3,13 +3,13 @@ PYTHONS
 
 Yet another Snake game written in Python.
 
-.. |img1| image:: img/game_start.png
+.. |img1| image:: https://raw.githubusercontent.com/julianolf/pythons/master/img/game_start.png
     :width: 320px
 
-.. |img2| image:: img/game_play.png
+.. |img2| image:: https://raw.githubusercontent.com/julianolf/pythons/master/img/game_play.png
     :width: 320px
 
-.. |img3| image:: img/game_over.png
+.. |img3| image:: https://raw.githubusercontent.com/julianolf/pythons/master/img/game_over.png
     :width: 320px
 
 +--------+--------+--------+
