@@ -1,6 +1,5 @@
-*******
 PYTHONS
-*******
+=======
 
 Yet another Snake game written in Python.
 
@@ -16,3 +15,15 @@ Yet another Snake game written in Python.
 +--------+--------+--------+
 | |img1| | |img2| | |img3| |
 +--------+--------+--------+
+
+Requirements
+------------
+
+* Python 3.7+
+
+Installing
+----------
+
+Use ``pip`` to download and install the game. ::
+
+    $ pip install pythons
